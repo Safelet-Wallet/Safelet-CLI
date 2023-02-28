@@ -15,4 +15,21 @@ public class Transaction {
     private Double amount;
 
     private Coin coin;
+
+    public User getSource() {
+        return source;
+    }
+
+    public User getDestiny() {
+        return destiny;
+    }
+
+    @Override
+    public String toString() {
+        return  "emisor: " + source +
+                ", destinatario: " + destiny +
+                ", Fecha de realización=" + date +
+                ", Cantidad transferida=" + amount +
+                ", Moneda transferida=" + coin;
+    }
 }

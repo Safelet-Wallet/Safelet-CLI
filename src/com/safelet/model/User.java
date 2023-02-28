@@ -26,4 +26,15 @@ public class User {
 
 	private Set<Wallet> wallets = new LinkedHashSet<>();
 
+	public Set<Transaction> getReceived() {
+		return received;
+	}
+
+	public Set<Transaction> getSent() {
+		return sent;
+	}
+
+	public Set<Wallet> getWallets() {
+		return wallets;
+	}
 }

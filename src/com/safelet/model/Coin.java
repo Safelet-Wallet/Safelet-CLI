@@ -14,4 +14,8 @@ public class Coin {
 	private Double valueEuro;
 
 	private Double valueDollar;
+
+	public String getName() {
+		return name;
+	}
 }

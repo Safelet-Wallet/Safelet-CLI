@@ -13,4 +13,12 @@ public class Wallet {
 	private Coin coin;
 
 	private Double balance;
+
+	public Coin getCoin() {
+		return coin;
+	}
+
+	public Double getBalance() {
+		return balance;
+	}
 }
