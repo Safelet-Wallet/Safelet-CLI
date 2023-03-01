@@ -34,7 +34,7 @@ public class Main implements Runnable{
             nombre = sc.nextLine();
             System.out.println("Contraseña: ");
             contrasenya = sc.nextLine();
-            user = Connection.loginUser(nombre, contrasenya);
+            String token = Connection.loginUser(nombre, contrasenya);
             if(user==null) {
                 System.out.println("Usuario incorrecto, intentalo otra vez");
             }

@@ -1,34 +1,31 @@
 package com.safelet;
 
-import com.google.gson.GsonBuilder;
-import com.safelet.model.User;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.io.*;
+import java.net.URLEncoder;
 
-public abstract class Connection {
+public class Connection {
 
 	private static final Integer PORT = 8443;
-	private static final String HOST_DIRECTION = "localhost";
+	private static final String HOST_DIRECTION = "http://localhost";
 
-	private Connection(){}
+	public static String loginUser(String username, String password){
 
-	private static String encrypt(String password){
-		Base64.Encoder encoder = Base64.getEncoder();
-		return new String(encoder.encode(password.getBytes()));
-	}
+		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			String data = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8") + "&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+			String path = "/login";
+			BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			wr.write("POST " + path + " HTTP/1.0\n");
+			wr.write("Content-Length: " + data.length() + "\n");
+			wr.write("Content-Type: application/x-www-form-urlencoded\n");
+			wr.write("\r\n");
+			wr.write(data);
+			wr.flush();
 
-	public static User loginUser(String username, String password){
-
-		try(Socket s = new Socket(HOST_DIRECTION, PORT)){
-
-			OutputStreamWriter osw = new OutputStreamWriter(s.getOutputStream());
-			osw.write("GET / HTTP/1.1\nHost: " + HOST_DIRECTION + "\n");
-			osw.flush();
-
-			BufferedReader buffReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			BufferedReader buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String total="";
 			String line;
 
@@ -36,15 +33,13 @@ public abstract class Connection {
 				total+=line;
 			}
 
-			return new GsonBuilder().create().fromJson(total,User.class);
+			return total;
 
 		} catch (IOException e){
 
-			System.out.println("Error");
+			System.out.println("Error:" + e);
 		}
 
 		return null;
 	}
-
-
 }
