@@ -6,17 +6,31 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.Base64;
 
 public class Connection {
-
 	private static final Integer PORT = 8443;
-	private static final String HOST_DIRECTION = "http://localhost";
+	private static final String HOST_DIRECTION = "localhost";
 
-	public static String loginUser(String username, String password){
+	private static String encrypt(String password) {
+		Base64.Encoder encoder = Base64.getEncoder();
+		return new String(encoder.encode(password.getBytes()));
+	}
+
+	public static String loginUser(String username, String password) {
+		return enviarHttpPost("login", username, password);
+	}
+
+	public static String registrarUser(String username, String password) {
+		return enviarHttpPost("register", username, password);
+	}
+
+	public static String enviarHttpPost(String path, String username, String password){
 
 		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			// Encriptamos la contraseña antes de enviarla
+			password = encrypt(password);
 			String data = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8") + "&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
-			String path = "/login";
 			BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
 			wr.write("POST " + path + " HTTP/1.0\n");
 			wr.write("Content-Length: " + data.length() + "\n");
@@ -26,14 +40,14 @@ public class Connection {
 			wr.flush();
 
 			BufferedReader buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			String total="";
+			String respuesta="";
 			String line;
 
 			while ((line = buffReader.readLine()) != null){
-				total+=line;
+				respuesta+=line;
 			}
 
-			return total;
+			return respuesta;
 
 		} catch (IOException e){
 

@@ -51,7 +51,7 @@ public class Main implements Runnable{
 
     /**
      * Muestra el menú principal de la aplicación y permite al usuario elegir que quiere hacer
-     * @return devuelve la opción seleccionada
+     * @return La opción seleccionada, como String
      */
     public String printMenu(User user){
         System.out.println("1- Ver balance");
