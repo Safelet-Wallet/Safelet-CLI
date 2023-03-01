@@ -6,6 +6,10 @@ import com.safelet.model.Wallet;
 
 import java.util.Scanner;
 
+/**
+ * CLase que ejecuta la apicacion cliente con los menus
+ * @author Jose Juan Pastor
+ */
 public class Main implements Runnable{
 
     private static final Scanner sc = new Scanner(System.in);
