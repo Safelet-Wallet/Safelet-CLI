@@ -24,18 +24,18 @@ public class Main {
         System.out.println("Bienvenido a Safelet Wallet");
         System.out.println("Inicia sesion:");
         String nombre = "";
-        String contrasenya = "";
+        String contrasenya;
         while(user==null){
             System.out.println("Nombre: ");
             nombre = sc.nextLine();
             System.out.println("Contraseña: ");
             contrasenya = sc.nextLine();
-            user =
+            user = Connection.loginUser(nombre, contrasenya);
             if(user==null) {
                 System.out.println("Usuario incorrecto, intentalo otra vez");
             }
         }
-        System.out.println("Bienevenido"+nombre);
+        System.out.println("Bienevenido "+nombre);
         while(!opcion.equals("0")){
             printMenu(user);
             if(!opcion.matches("^[0-3]$")){
@@ -54,7 +54,7 @@ public class Main {
         System.out.println("2- Ver historial");
         System.out.println("3- Transefrir dinero");
         System.out.println("0- Salir");
-        String opcion = sc.nextLine();
+        opcion = sc.nextLine();
         switch (opcion){
             case "1":
                 checkBalance(user);

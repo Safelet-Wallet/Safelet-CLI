@@ -6,12 +6,14 @@ import com.safelet.model.User;
 import java.io.*;
 import java.net.Socket;
 
-public class Connection {
+public abstract class Connection {
 
-	private final Integer PORT = 8443;
-	private final String HOST_DIRECTION = "localhost";
+	private static final Integer PORT = 8443;
+	private static final String HOST_DIRECTION = "localhost";
 
-	public User loginUser(String username, String password){
+	private Connection(){}
+
+	public static User loginUser(String username, String password){
 
 		try(Socket s = new Socket(HOST_DIRECTION, PORT)){
 
@@ -31,9 +33,11 @@ public class Connection {
 
 		} catch (IOException e){
 
-			System.out.println("Error error");
+			System.out.println("Error");
 		}
 
 		return null;
 	}
+
+
 }
