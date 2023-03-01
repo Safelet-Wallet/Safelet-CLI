@@ -14,7 +14,7 @@ public class Main implements Runnable{
 
     private static final Scanner sc = new Scanner(System.in);
 
-    private User user;
+    private String token = "";
 
     private String opcion = "1";
 
@@ -26,34 +26,59 @@ public class Main implements Runnable{
      */
     public void start(){
         System.out.println("Bienvenido a Safelet Wallet");
-        System.out.println("Inicia sesion:");
-        String nombre = "";
-        String contrasenya;
-        while(user==null){
-            System.out.println("Nombre: ");
-            nombre = sc.nextLine();
-            System.out.println("Contraseña: ");
-            contrasenya = sc.nextLine();
-            String token = Connection.loginUser(nombre, contrasenya);
-            if(user==null) {
-                System.out.println("Usuario incorrecto, intentalo otra vez");
+        while(!opcion.equals("0")&&token.equals("")){
+            System.out.println("1- Crear cuenta:");
+            System.out.println("2- Iniciar sesion:");
+            System.out.println("0- Salir:");
+            opcion = sc.nextLine();
+            switch (opcion){
+                case "1":
+                    System.out.println("Nombre: ");
+                    String nombre = sc.nextLine();
+                    System.out.println("Contraseña: ");
+                    String contrasenya = sc.nextLine();
+                    Connection.registrarUser(nombre,contrasenya);
+                    token = Connection.loginUser(nombre,contrasenya);
+                    break;
+                case "2":
+                    iniciarSesion();
+                    break;
             }
-        }
-        System.out.println("Bienevenido "+nombre);
-        while(!opcion.equals("0")){
-            printMenu(user);
-            if(!opcion.matches("^[0-3]$")){
+            if(!opcion.matches("^[0-2]$")){
                 System.out.println("Opcion no valida");
             }
+            if(!opcion.equals("0")){
+                if (token.equals("")) {
+                    System.out.println("Usuario incorrecto, intentalo otra vez");
+                }
+            }
         }
-        System.out.println("Cerrando sesion...");
+        if(!token.equals("")) {
+            while (!opcion.equals("0")) {
+                printMenu(token);
+                if (!opcion.matches("^[0-3]$")) {
+                    System.out.println("Opcion no valida");
+                }
+            }
+        }
+        System.out.println("Cerrando aplicacion...");
+    }
+
+    public void iniciarSesion(){
+        String nombre = "";
+        String contrasenya;
+        System.out.println("Nombre: ");
+        nombre = sc.nextLine();
+        System.out.println("Contraseña: ");
+        contrasenya = sc.nextLine();
+        token = Connection.loginUser(nombre, contrasenya);
     }
 
     /**
      * Muestra el menú principal de la aplicación y permite al usuario elegir que quiere hacer
      * @return La opción seleccionada, como String
      */
-    public String printMenu(User user){
+    public String printMenu(String token){
         System.out.println("1- Ver balance");
         System.out.println("2- Ver historial");
         System.out.println("3- Transefrir dinero");
@@ -61,13 +86,13 @@ public class Main implements Runnable{
         opcion = sc.nextLine();
         switch (opcion){
             case "1":
-                checkBalance(user);
+                checkBalance(token);
                 break;
             case "2":
-                checkTransactionRecord(user);
+                checkTransactionRecord(token);
                 break;
             case "3":
-                transferMoney(user);
+                transferMoney(token);
                 break;
         }
         return opcion;
@@ -76,32 +101,22 @@ public class Main implements Runnable{
     /**
      * Muestra el balance actual
      */
-    public void checkBalance(User user){
+    public void checkBalance(String token){
         System.out.println("Balance actual");
-        for (Wallet wallet:user.getWallets()) {
-            System.out.println("Balance de la cartera de "+wallet.getCoin().getName()+": "+wallet.getBalance());
-        }
     }
 
     /**
      * Muestra el historial de transacciones
      */
-    public void checkTransactionRecord(User user){
+    public void checkTransactionRecord(String token){
         System.out.println("Historial de transacciones");
         System.out.println("Enviadas");
-        for (Transaction transaction:user.getSent()) {
-            System.out.println(transaction.toString());
-        }
-        System.out.println("Recibidas");
-        for (Transaction transaction:user.getReceived()) {
-            System.out.println(transaction.toString());
-        }
     }
 
     /**
      * Muestra lo relacionado a una transacción a realizar
      */
-    public void transferMoney(User user){
+    public void transferMoney(String token){
         System.out.println("Transferir");
 
     }

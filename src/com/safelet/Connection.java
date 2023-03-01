@@ -18,14 +18,14 @@ public class Connection {
 	}
 
 	public static String loginUser(String username, String password) {
-		return enviarHttpPost("login", username, password);
+		return enviarHttpPost("/login", username, password);
 	}
 
-	public static String registrarUser(String username, String password) {
-		return enviarHttpPost("register", username, password);
+	public static void registrarUser(String username, String password) {
+		enviarHttpPost("/register", username, password);
 	}
 
-	public static String enviarHttpPost(String path, String username, String password){
+	private static String enviarHttpPost(String path, String username, String password){
 
 		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
 			// Encriptamos la contraseña antes de enviarla
@@ -33,6 +33,7 @@ public class Connection {
 			String data = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8") + "&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 			BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
 			wr.write("POST " + path + " HTTP/1.0\n");
+			wr.write("Host: " + HOST_DIRECTION+ "\n");
 			wr.write("Content-Length: " + data.length() + "\n");
 			wr.write("Content-Type: application/x-www-form-urlencoded\n");
 			wr.write("\r\n");
@@ -44,7 +45,7 @@ public class Connection {
 			String line;
 
 			while ((line = buffReader.readLine()) != null){
-				respuesta+=line;
+				respuesta=line;
 			}
 
 			return respuesta;
