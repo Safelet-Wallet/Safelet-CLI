@@ -6,7 +6,7 @@ import com.safelet.model.Wallet;
 
 import java.util.Scanner;
 
-public class Main {
+public class Main implements Runnable{
 
     private static final Scanner sc = new Scanner(System.in);
 
@@ -103,6 +103,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Main().start();
+        Thread thread = new Thread(new Main());
+        thread.start();
+    }
+
+    @Override
+    public void run() {
+        this.start();
     }
 }

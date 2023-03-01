@@ -5,6 +5,8 @@ import com.safelet.model.User;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public abstract class Connection {
 
@@ -12,6 +14,11 @@ public abstract class Connection {
 	private static final String HOST_DIRECTION = "localhost";
 
 	private Connection(){}
+
+	private static String encrypt(String password){
+		Base64.Encoder encoder = Base64.getEncoder();
+		return new String(encoder.encode(password.getBytes()));
+	}
 
 	public static User loginUser(String username, String password){
 
