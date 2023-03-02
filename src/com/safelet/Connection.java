@@ -102,12 +102,8 @@ public class Connection {
 			String linea;
 
 			while ((linea = reader.readLine()) != null){
-//				System.out.println(linea);
 				respuesta = linea;
 			}
-
-//			reader.close();
-//			writer.close();
 
 			return respuesta;
 

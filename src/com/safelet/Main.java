@@ -22,7 +22,6 @@ public class Main implements Runnable{
      */
     public void start(){
         System.out.println("Bienvenido a Safelet Wallet");
-//        System.out.println("Balance: " + Connection.obtenerBalance("0x1cd099ddcfa4f180e70b5ec3bddc7655ff5d6919"));
         while(!opcion.equals("0") && token.equals("")){
             System.out.println("1- Crear cuenta:");
             System.out.println("2- Iniciar sesion:");
@@ -53,36 +52,49 @@ public class Main implements Runnable{
                 }
             }
         }
-        System.out.println("Cerrando aplicación...");
+        System.out.println("\nCerrando aplicación...");
     }
 
     private void registrarse() {
-        System.out.println("Nombre: ");
+        System.out.println("\nNombre: ");
         String nombre = sc.nextLine();
         System.out.println("Contraseña: ");
         String contrasenya = sc.nextLine();
+        System.out.println("\nRegistrando usuario...");
         Connection.registrarUser(nombre,contrasenya);
-        token = Connection.loginUser(nombre,contrasenya);
+        System.out.println("OK");
+        loginYAddress(nombre, contrasenya);
     }
 
     public void iniciarSesion(){
         String nombre = "";
         String contrasenya;
-        System.out.println("Nombre: ");
+        System.out.println("\nNombre: ");
         nombre = sc.nextLine();
         System.out.println("Contraseña: ");
         contrasenya = sc.nextLine();
+        loginYAddress(nombre, contrasenya);
+    }
+
+    /**
+     * Loguea al usuario y le crea una address.
+     * Este fragmento es ejecutado exactamente igual en registro e inicio de sesión.
+     */
+    private void loginYAddress(String nombre, String contrasenya) {
+        System.out.println("\nIniciando sesión...");
         token = Connection.loginUser(nombre, contrasenya);
-        System.out.println("token = " + token);
+        System.out.println((!token.equals("") ? "OK" : "ERROR"));
+//        System.out.println("token = " + token);
+        System.out.println("\nCreando address...");
         address = Connection.crearAddress(token);
-        System.out.println("address = " + address);
+        System.out.println((!address.equals("Invalid AuthToken") ? "OK" : "ERROR") + "\n");
+//        System.out.println("address = " + address);
     }
 
     /**
      * Muestra el menú principal de la aplicación y permite al usuario elegir que quiere hacer
-     * @return La opción seleccionada, como String
      */
-    public String printMenu(){
+    public void printMenu(){
         System.out.println("1- Ver balance");
         System.out.println("2- Ver historial");
         System.out.println("3- Transefrir dinero");
@@ -99,7 +111,6 @@ public class Main implements Runnable{
                 transferMoney();
                 break;
         }
-        return opcion;
     }
 
     /**
@@ -107,23 +118,29 @@ public class Main implements Runnable{
      */
     public void checkBalance(){
         String balance = Connection.obtenerBalance(address);
-        System.out.println("Balance actual: " + balance);
+        System.out.println("\nBalance actual: " + balance + "\n");
     }
 
     /**
      * Muestra el historial de transacciones
      */
     public void checkTransactionRecord(){
-        System.out.println("Historial de transacciones");
+        System.out.println("\nHistorial de transacciones");
         System.out.println("Enviadas");
+        // TODO: mostrar transsacciones enviadas
+
+        System.out.println("\nRecibidas");
+        // TODO: mostrar transsacciones recibidas
+        System.out.println();
     }
 
     /**
      * Muestra lo relacionado a una transacción a realizar
      */
     public void transferMoney(){
-        System.out.println("Transferir");
-
+        System.out.println("\nTransferir");
+        // TODO: Transferir cripto
+        System.out.println();
     }
 
     public static void main(String[] args) {
