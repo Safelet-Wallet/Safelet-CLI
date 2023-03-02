@@ -69,6 +69,9 @@ public class Main implements Runnable{
         Connection.registrarUser(nombre,contrasenya);
         System.out.println("OK");
         loginYAddress(nombre, contrasenya);
+        System.out.println("\nCreando address...");
+        address = Connection.crearAddress(token);
+        System.out.println((!address.equals("Invalid AuthToken") ? "Tu address es: " + address : "ERROR") + "\n");
     }
 
     public void iniciarSesion(){
@@ -79,6 +82,7 @@ public class Main implements Runnable{
         System.out.println("Contraseña: ");
         contrasenya = sc.nextLine();
         loginYAddress(nombre, contrasenya);
+        address = Connection.getAddress(token);
     }
 
     /**
@@ -126,11 +130,7 @@ public class Main implements Runnable{
 
         System.out.println((!token.equals("") ? "OK" : "ERROR"));
 
-        System.out.println("\nCreando address...");
 
-        address = Connection.crearAddress(token);
-
-        System.out.println((!address.equals("Invalid AuthToken") ? "Tu address es: " + address : "ERROR") + "\n");
 //
     }
 

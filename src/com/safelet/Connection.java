@@ -193,4 +193,33 @@ public class Connection {
 
 		return null;
 	}
+
+	public static String getAddress(String token) {
+		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			String data = URLEncoder.encode("token", "UTF-8") + "=" + URLEncoder.encode(token, "UTF-8");
+
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			writer.write("POST /address HTTP/1.0\n");
+			writer.write("Host: " + HOST_DIRECTION + "\n");
+			writer.write("Content-Length: " + data.length() + "\n");
+			writer.write("Content-Type: application/x-www-form-urlencoded\n");
+			writer.write("\r\n");
+			writer.write(data);
+			writer.flush();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String respuesta = "";
+			String linea;
+
+			while ((linea = reader.readLine()) != null){
+				respuesta = linea;
+			}
+
+			return respuesta;
+		} catch (IOException e){
+			System.out.println("Error:" + e);
+		}
+
+		return null;
+	}
 }
