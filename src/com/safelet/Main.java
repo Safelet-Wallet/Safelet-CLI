@@ -109,7 +109,6 @@ public class Main implements Runnable{
                 break;
             case "3":
                 transferMoney();
-                System.out.println(Connection.makeTransaction(token, address));
                 break;
         }
     }
@@ -127,11 +126,7 @@ public class Main implements Runnable{
      */
     public void checkTransactionRecord(){
         System.out.println("\nHistorial de transacciones");
-        System.out.println("Enviadas");
         // TODO: mostrar transsacciones enviadas
-
-        System.out.println("\nRecibidas");
-        // TODO: mostrar transsacciones recibidas
         System.out.println();
     }
 
@@ -140,7 +135,11 @@ public class Main implements Runnable{
      */
     public void transferMoney(){
         System.out.println("\nTransferir");
-        // TODO: Transferir cripto
+        System.out.println("¿Cuánto vas a enviar?");
+        String cantidad = sc.nextLine();
+        System.out.println("\n¿A qué dirección?");
+        String toAddress = sc.nextLine();
+        System.out.println(Connection.makeTransaction(token, toAddress, cantidad));
         System.out.println();
     }
 

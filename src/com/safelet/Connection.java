@@ -25,8 +25,8 @@ public class Connection {
 		enviarHttpPostUser("/register", username, password);
 	}
 
-	public static String makeTransaction(String token, String adress){
-		return crearTransaction(token, adress);
+	public static String makeTransaction(String token, String adress, String cantidad){
+		return crearTransaction(token, adress, cantidad);
 	}
 
 
@@ -119,10 +119,10 @@ public class Connection {
 		return null;
 	}
 
-	private static String crearTransaction(String token, String address) {
+	private static String crearTransaction(String token, String address, String cantidad) {
 		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
 			String data = URLEncoder.encode("recipient", "UTF-8") + "=" + URLEncoder.encode(address, "UTF-8") +
-					"&" +URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode("120", "UTF-8") +
+					"&" +URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode(cantidad, "UTF-8") +
 					"&" +URLEncoder.encode("token", "UTF-8") + "=" + URLEncoder.encode(token, "UTF-8");
 
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
