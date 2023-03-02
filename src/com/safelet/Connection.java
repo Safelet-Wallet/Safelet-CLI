@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class Connection {
@@ -29,7 +30,6 @@ public class Connection {
 		return crearTransaction(token, adress, cantidad);
 	}
 
-
 	// El login y registro funcionan de manera idéntica en cuanto a petición HTTP, excepto el path.
 	// Por eso aprovechamos el mismo método para ambos.
 	private static String enviarHttpPostUser(String path, String username, String password){
@@ -41,6 +41,50 @@ public class Connection {
 					"&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			writer.write("POST " + path + " HTTP/1.0\n");
+			writer.write("Host: " + HOST_DIRECTION + "\n");
+			writer.write("Content-Length: " + data.length() + "\n");
+			writer.write("Content-Type: application/x-www-form-urlencoded\n");
+			writer.write("\r\n");
+			writer.write(data);
+			writer.flush();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String respuesta = "";
+			String linea;
+
+			while ((linea = reader.readLine()) != null){
+				respuesta = linea;
+			}
+
+			return respuesta;
+		} catch (IOException e){
+			System.out.println("Error:" + e);
+		}
+
+		return null;
+	}
+
+
+	//** NUEVO MD5 DIGEST NECESITA HASH Y NONCE **
+	public static String loginUserAuthCoded(String hash, String nonce) {
+		return enviarHttpPostUserDigest("/login/auth", hash, nonce);
+	}
+
+	//** NUEVO MD5 DIGEST DEVUELVE NONCE **
+	public static String loginUserAuth(String username, String password) {
+		return enviarHttpPostUser("/login/auth/request", username, password);
+	}
+
+	//** NUEVO MD5 DIGEST DEVUELVE EL AUTHTOKEN**
+	private static String enviarHttpPostUserDigest(String path, String hash, String nonce){
+		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			// Encriptamos la contraseña antes de enviarla
+
+			String data = URLEncoder.encode("hash", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(hash, StandardCharsets.UTF_16) +
+					"&" +URLEncoder.encode("nonce", StandardCharsets.UTF_8) + "=" + URLEncoder.encode(nonce, StandardCharsets.UTF_8);
+
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
 			writer.write("POST " + path + " HTTP/1.0\n");
 			writer.write("Host: " + HOST_DIRECTION + "\n");
 			writer.write("Content-Length: " + data.length() + "\n");

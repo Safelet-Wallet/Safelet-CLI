@@ -1,5 +1,10 @@
 package com.safelet;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -81,14 +86,52 @@ public class Main implements Runnable{
      * Este fragmento es ejecutado exactamente igual en registro e inicio de sesión.
      */
     private void loginYAddress(String nombre, String contrasenya) {
-        System.out.println("\nIniciando sesión...");
-        token = Connection.loginUser(nombre, contrasenya);
+        System.out.println("\nSAFELECT-CLI\\ Inicio de sesión:");
+
+        token = "";
+
+        //ELIMINAR DE AQUI
+        String nonce = Connection.loginUserAuth(nombre, contrasenya);
+
+        MessageDigest md;
+        try {
+
+            System.out.println("\nNonce: " + nonce);
+            String secret = nombre + ":" + contrasenya + ":" + nonce;
+
+            MessageDigest m = MessageDigest.getInstance("MD5");
+
+            m.reset();
+            m.update(secret.getBytes());
+            byte[] digest = m.digest();
+
+            BigInteger bigInt = new BigInteger(1,digest);
+            String hashtext = bigInt.toString(16);
+
+            while(hashtext.length() < 32 ){
+                hashtext = "0"+hashtext;
+            }
+
+            token = Connection.loginUserAuthCoded(hashtext, nonce);
+
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("MD5 not found");
+        }
+
+        //A AQUI
+
+        /* Recuperar
+         * token = Connection.loginUser(nombre, contrasenya);
+         */
+
         System.out.println((!token.equals("") ? "OK" : "ERROR"));
-//        System.out.println("token = " + token);
+
         System.out.println("\nCreando address...");
+
         address = Connection.crearAddress(token);
-        System.out.println((!address.equals("Invalid AuthToken") ? "OK" : "ERROR") + "\n");
-//        System.out.println("address = " + address);
+
+        System.out.println((!address.equals("Invalid AuthToken") ? "Tu address es: " + address : "ERROR") + "\n");
+//
     }
 
     /**
@@ -118,7 +161,7 @@ public class Main implements Runnable{
      */
     public void checkBalance(){
         String balance = Connection.obtenerBalance(address);
-        System.out.println("\nBalance actual: " + balance + "\n");
+        System.out.println("\nAdress:"+address + "\nBalance actual: " + balance + "\n");
     }
 
     /**
