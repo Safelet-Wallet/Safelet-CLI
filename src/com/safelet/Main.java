@@ -109,6 +109,7 @@ public class Main implements Runnable{
                 break;
             case "3":
                 transferMoney();
+                System.out.println(Connection.makeTransaction(token, address));
                 break;
         }
     }

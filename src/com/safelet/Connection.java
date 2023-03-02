@@ -25,6 +25,10 @@ public class Connection {
 		enviarHttpPostUser("/register", username, password);
 	}
 
+	public static String makeTransaction(String token, String adress){
+		return crearTransaction(token, adress);
+	}
+
 
 	// El login y registro funcionan de manera idéntica en cuanto a petición HTTP, excepto el path.
 	// Por eso aprovechamos el mismo método para ambos.
@@ -33,7 +37,8 @@ public class Connection {
 			// Encriptamos la contraseña antes de enviarla
 			password = encrypt(password);
 
-			String data = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8") + "&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+			String data = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8") +
+					"&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
 
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
 			writer.write("POST " + path + " HTTP/1.0\n");
@@ -107,6 +112,37 @@ public class Connection {
 
 			return respuesta;
 
+		} catch (IOException e){
+			System.out.println("Error:" + e);
+		}
+
+		return null;
+	}
+
+	private static String crearTransaction(String token, String address) {
+		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			String data = URLEncoder.encode("recipient", "UTF-8") + "=" + URLEncoder.encode(address, "UTF-8") +
+					"&" +URLEncoder.encode("amount", "UTF-8") + "=" + URLEncoder.encode("120", "UTF-8") +
+					"&" +URLEncoder.encode("token", "UTF-8") + "=" + URLEncoder.encode(token, "UTF-8");
+
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			writer.write("POST /eth/send HTTP/1.0\n");
+			writer.write("Host: " + HOST_DIRECTION + "\n");
+			writer.write("Content-Length: " + data.length() + "\n");
+			writer.write("Content-Type: application/x-www-form-urlencoded\n");
+			writer.write("\r\n");
+			writer.write(data);
+			writer.flush();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String respuesta = "";
+			String linea;
+
+			while ((linea = reader.readLine()) != null){
+				respuesta = linea;
+			}
+
+			return respuesta;
 		} catch (IOException e){
 			System.out.println("Error:" + e);
 		}
