@@ -1,9 +1,5 @@
 package com.safelet;
 
-import com.safelet.model.Transaction;
-import com.safelet.model.User;
-import com.safelet.model.Wallet;
-
 import java.util.Scanner;
 
 /**
@@ -11,10 +7,10 @@ import java.util.Scanner;
  * @author Jose Juan Pastor
  */
 public class Main implements Runnable{
-
     private static final Scanner sc = new Scanner(System.in);
 
     private String token = "";
+    private String address = "";
 
     private String opcion = "1";
 
@@ -26,19 +22,15 @@ public class Main implements Runnable{
      */
     public void start(){
         System.out.println("Bienvenido a Safelet Wallet");
-        while(!opcion.equals("0")&&token.equals("")){
+//        System.out.println("Balance: " + Connection.obtenerBalance("0x1cd099ddcfa4f180e70b5ec3bddc7655ff5d6919"));
+        while(!opcion.equals("0") && token.equals("")){
             System.out.println("1- Crear cuenta:");
             System.out.println("2- Iniciar sesion:");
             System.out.println("0- Salir:");
             opcion = sc.nextLine();
             switch (opcion){
                 case "1":
-                    System.out.println("Nombre: ");
-                    String nombre = sc.nextLine();
-                    System.out.println("Contraseña: ");
-                    String contrasenya = sc.nextLine();
-                    Connection.registrarUser(nombre,contrasenya);
-                    token = Connection.loginUser(nombre,contrasenya);
+                    registrarse();
                     break;
                 case "2":
                     iniciarSesion();
@@ -55,13 +47,22 @@ public class Main implements Runnable{
         }
         if(!token.equals("")) {
             while (!opcion.equals("0")) {
-                printMenu(token);
+                printMenu();
                 if (!opcion.matches("^[0-3]$")) {
-                    System.out.println("Opcion no valida");
+                    System.out.println("Opción no valida");
                 }
             }
         }
-        System.out.println("Cerrando aplicacion...");
+        System.out.println("Cerrando aplicación...");
+    }
+
+    private void registrarse() {
+        System.out.println("Nombre: ");
+        String nombre = sc.nextLine();
+        System.out.println("Contraseña: ");
+        String contrasenya = sc.nextLine();
+        Connection.registrarUser(nombre,contrasenya);
+        token = Connection.loginUser(nombre,contrasenya);
     }
 
     public void iniciarSesion(){
@@ -72,13 +73,16 @@ public class Main implements Runnable{
         System.out.println("Contraseña: ");
         contrasenya = sc.nextLine();
         token = Connection.loginUser(nombre, contrasenya);
+        System.out.println("token = " + token);
+        address = Connection.crearAddress(token);
+        System.out.println("address = " + address);
     }
 
     /**
      * Muestra el menú principal de la aplicación y permite al usuario elegir que quiere hacer
      * @return La opción seleccionada, como String
      */
-    public String printMenu(String token){
+    public String printMenu(){
         System.out.println("1- Ver balance");
         System.out.println("2- Ver historial");
         System.out.println("3- Transefrir dinero");
@@ -86,13 +90,13 @@ public class Main implements Runnable{
         opcion = sc.nextLine();
         switch (opcion){
             case "1":
-                checkBalance(token);
+                checkBalance();
                 break;
             case "2":
-                checkTransactionRecord(token);
+                checkTransactionRecord();
                 break;
             case "3":
-                transferMoney(token);
+                transferMoney();
                 break;
         }
         return opcion;
@@ -101,14 +105,15 @@ public class Main implements Runnable{
     /**
      * Muestra el balance actual
      */
-    public void checkBalance(String token){
-        System.out.println("Balance actual");
+    public void checkBalance(){
+        String balance = Connection.obtenerBalance(address);
+        System.out.println("Balance actual: " + balance);
     }
 
     /**
      * Muestra el historial de transacciones
      */
-    public void checkTransactionRecord(String token){
+    public void checkTransactionRecord(){
         System.out.println("Historial de transacciones");
         System.out.println("Enviadas");
     }
@@ -116,7 +121,7 @@ public class Main implements Runnable{
     /**
      * Muestra lo relacionado a una transacción a realizar
      */
-    public void transferMoney(String token){
+    public void transferMoney(){
         System.out.println("Transferir");
 
     }

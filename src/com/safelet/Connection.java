@@ -18,40 +18,100 @@ public class Connection {
 	}
 
 	public static String loginUser(String username, String password) {
-		return enviarHttpPost("/login", username, password);
+		return enviarHttpPostUser("/login", username, password);
 	}
 
 	public static void registrarUser(String username, String password) {
-		enviarHttpPost("/register", username, password);
+		enviarHttpPostUser("/register", username, password);
 	}
 
-	private static String enviarHttpPost(String path, String username, String password){
 
+	// El login y registro funcionan de manera idéntica en cuanto a petición HTTP, excepto el path.
+	// Por eso aprovechamos el mismo método para ambos.
+	private static String enviarHttpPostUser(String path, String username, String password){
 		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
 			// Encriptamos la contraseña antes de enviarla
 			password = encrypt(password);
+
 			String data = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(username, "UTF-8") + "&" +URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
-			BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
-			wr.write("POST " + path + " HTTP/1.0\n");
-			wr.write("Host: " + HOST_DIRECTION+ "\n");
-			wr.write("Content-Length: " + data.length() + "\n");
-			wr.write("Content-Type: application/x-www-form-urlencoded\n");
-			wr.write("\r\n");
-			wr.write(data);
-			wr.flush();
 
-			BufferedReader buffReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			String respuesta="";
-			String line;
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			writer.write("POST " + path + " HTTP/1.0\n");
+			writer.write("Host: " + HOST_DIRECTION + "\n");
+			writer.write("Content-Length: " + data.length() + "\n");
+			writer.write("Content-Type: application/x-www-form-urlencoded\n");
+			writer.write("\r\n");
+			writer.write(data);
+			writer.flush();
 
-			while ((line = buffReader.readLine()) != null){
-				respuesta=line;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String respuesta = "";
+			String linea;
+
+			while ((linea = reader.readLine()) != null){
+				respuesta = linea;
 			}
+
+			return respuesta;
+		} catch (IOException e){
+			System.out.println("Error:" + e);
+		}
+
+		return null;
+	}
+
+	public static String crearAddress(String token) {
+		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			String data = URLEncoder.encode("token", "UTF-8") + "=" + URLEncoder.encode(token, "UTF-8");
+
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			writer.write("POST /address/new HTTP/1.0\n");
+			writer.write("Host: " + HOST_DIRECTION + "\n");
+			writer.write("Content-Length: " + data.length() + "\n");
+			writer.write("Content-Type: application/x-www-form-urlencoded\n");
+			writer.write("\r\n");
+			writer.write(data);
+			writer.flush();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String respuesta = "";
+			String linea;
+
+			while ((linea = reader.readLine()) != null){
+				respuesta = linea;
+			}
+
+			return respuesta;
+		} catch (IOException e){
+			System.out.println("Error:" + e);
+		}
+
+		return null;
+	}
+
+	public static String obtenerBalance(String address){
+		try(Socket socket = new Socket(HOST_DIRECTION, PORT)){
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			writer.write("GET /" + address + " HTTP/1.0\n");
+			writer.write("Host: " + HOST_DIRECTION + "\n");
+			writer.write("\r\n");
+			writer.flush();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String respuesta = "";
+			String linea;
+
+			while ((linea = reader.readLine()) != null){
+//				System.out.println(linea);
+				respuesta = linea;
+			}
+
+//			reader.close();
+//			writer.close();
 
 			return respuesta;
 
 		} catch (IOException e){
-
 			System.out.println("Error:" + e);
 		}
 
